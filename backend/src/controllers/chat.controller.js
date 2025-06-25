@@ -1,4 +1,4 @@
-import { generateStreamToken } from "../lib/steam";
+import { generateStreamToken } from "../lib/steam.js";
 
 export async function getStreamToken(req, res) {
     try {
@@ -7,6 +7,6 @@ export async function getStreamToken(req, res) {
     } catch (error) {
         console.log("Error in getStreamToken controller", error.message);
         res.status(500).json({ message: "Internal server error" });
-        
+
     }
 }
