@@ -202,7 +202,7 @@ export async function onboard(req, res) {
                 image: updatedUser.profilePic || ""
             })
         } catch (error) {
-            console.log("Error updating Stream user during onboarding:", streamError.message);
+            console.log("Error updating Stream user during onboarding:", error.message);
         }
 
         await sendWellcomeEmail(updatedUser.email, updatedUser.fullName);
