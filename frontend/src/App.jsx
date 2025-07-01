@@ -1,35 +1,57 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
+import ChatPage from "./pages/ChatPage";
+import CallPage from "./pages/CallPage";
+import NotificationPage from "./pages/NotificationPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import { Toaster } from "react-hot-toast";
+import useAuthUser from "./hooks/useAuthUser";
+import PageLoader from "./components/PageLoader";
+import Layout from "./components/Layout";
+import Profile from "./pages/Profile";
+import { useThemeStore } from "./store/useThemeStore";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+
+  const { theme } = useThemeStore();
+  const { isLoading, authUser } = useAuthUser();
+
+  const isAuthenticate = Boolean(authUser);
+  const isOnboarded = authUser?.isOnboarded;
+
+  if (isLoading) return <PageLoader />
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="h-screen" data-theme={theme}>
+      <Routes>
+        <Route
+          path="/"
+          element={isAuthenticate && isOnboarded ? (<Layout showSidebar={true}><HomePage /></Layout>) : (<Navigate to={isAuthenticate ? "/onboarding" : "/login"} />)} />
+        <Route
+          path="/login"
+          element={!isAuthenticate ? <LoginPage /> : (<Navigate to={isOnboarded ? "/" : "/onboarding"} />)} />
+        <Route
+          path="/signup"
+          element={!isAuthenticate ? <SignUpPage /> : (<Navigate to={isOnboarded ? "/" : "/onboarding"} />)} />
+        <Route
+          path="/chat"
+          element={isAuthenticate ? <Layout><ChatPage /> </Layout> : <Navigate to={"/login"} />} />
+        <Route
+          path="/call"
+          element={isAuthenticate ? <CallPage /> : <Navigate to={"/login"} />} />
+        <Route
+          path="/notification"
+          element={isAuthenticate ? <NotificationPage /> : <Navigate to={"/login"} />} />
+        <Route
+          path="/onboarding"
+          element={isAuthenticate && !isOnboarded ? <OnboardingPage /> : <Navigate to={isAuthenticate ? "/" : "/login"} />} />
+        <Route
+          path="/profile"
+          element={isAuthenticate ? <Profile /> : <Navigate to={"/login"} />} />
+      </Routes>
+      <Toaster />
+    </div>
   )
 }
-
-export default App
