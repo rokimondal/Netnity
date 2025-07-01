@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 import OtpVerification from "../models/OtpVerification.js";
 import User from "../models/User.js";
 import { upsertStreamUser } from "../lib/steam.js";
+import TempImage from "../models/TempImage.js";
 
 export async function signup(req, res) {
     const { fullName, otp, email, password } = req.body;
@@ -82,7 +83,7 @@ export async function sendOtp(req, res) {
         }
 
         if (purpose !== "signup" && purpose !== "forgotPassword" && purpose !== "login") {
-            res.status(400).json({ message: "Invalid purpose" })
+            return res.status(400).json({ message: "Invalid purpose" })
         }
 
         if (purpose === "signup") {
@@ -110,6 +111,7 @@ export async function sendOtp(req, res) {
         res.status(200).json({ success: true, message: "OTP sent successfully" })
     } catch (error) {
         console.log("Error in sending otp controller ", error);
+        return res.status(500).json({ message: "Failed to send OTP. Please try again later." });
     }
 }
 
@@ -175,7 +177,7 @@ export async function logout(req, res) {
 export async function onboard(req, res) {
     try {
         const userId = req.user._id;
-        const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
+        const { fullName, bio, nativeLanguage, learningLanguage, location, profilePic } = req.body;
         if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
             return res.status(400).json({
                 message: "All fields are required",
@@ -188,10 +190,17 @@ export async function onboard(req, res) {
                 ].filter(Boolean),
             });
         }
+
+        const tempImage = await TempImage.findOne({ userId, url: profilePic });
+
         const updatedUser = await User.findByIdAndUpdate(userId, {
             ...req.body,
             isOnboarded: true,
         }, { new: true });
+
+        if (tempImage) {
+            await TempImage.findOneAndDelete(tempImage._id);
+        }
 
         if (!updatedUser) return res.status(404).json({ message: "User not found" });
 
