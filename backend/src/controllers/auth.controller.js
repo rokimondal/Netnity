@@ -127,7 +127,6 @@ export async function login(req, res) {
             if (!password || !email) return res.status(401).json({ message: "All fields are required" });
 
             user = await User.findOne({ email }).select("+password");
-
             if (!user) return res.status(401).json({ message: "Invalid email and password" });
 
             const isPasswordCorrect = await user.matchPassword(password);
@@ -220,5 +219,24 @@ export async function onboard(req, res) {
     } catch (error) {
         console.log("Error in onboarding", error);
         res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export async function addAllUsersToStream(req, res) {
+    try {
+        const users = await User.find({});
+
+        for (const user of users) {
+            await upsertStreamUser({
+                id: user._id.toString(),
+                name: user.fullName,
+                image: user.profilePic || ""
+            });
+        }
+
+        res.status(200).json({ success: true, message: "All users added to Stream successfully." });
+    } catch (error) {
+        console.error("Error adding users to stream:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
