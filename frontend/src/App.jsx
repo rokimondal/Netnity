@@ -36,20 +36,21 @@ export default function App() {
           path="/signup"
           element={!isAuthenticate ? <SignUpPage /> : (<Navigate to={isOnboarded ? "/" : "/onboarding"} />)} />
         <Route
-          path="/chat"
-          element={isAuthenticate ? <Layout><ChatPage /> </Layout> : <Navigate to={"/login"} />} />
+          path="/chat/:id"
+          element={isAuthenticate && isOnboarded ? <Layout showSidebar={false}><ChatPage /> </Layout> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
         <Route
-          path="/call"
-          element={isAuthenticate ? <CallPage /> : <Navigate to={"/login"} />} />
+          path="/call/:id"
+          element={isAuthenticate && isOnboarded ? <CallPage /> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
         <Route
-          path="/notification"
-          element={isAuthenticate ? <NotificationPage /> : <Navigate to={"/login"} />} />
+          path="/notifications"
+          element={isAuthenticate && isOnboarded ? <Layout showSidebar={true}><NotificationPage /></Layout> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
         <Route
           path="/onboarding"
           element={isAuthenticate && !isOnboarded ? <OnboardingPage /> : <Navigate to={isAuthenticate ? "/" : "/login"} />} />
         <Route
           path="/profile"
           element={isAuthenticate ? <Profile /> : <Navigate to={"/login"} />} />
+
       </Routes>
       <Toaster />
     </div>

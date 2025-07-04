@@ -71,3 +71,59 @@ export const updateUploadImage = async (imageData) => {
         throw error;
     }
 }
+export const getUserFriends = async () => {
+    try {
+        const response = await axiosInstance.get('/users/friends');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const getRecommendedUsers = async () => {
+    try {
+        const response = await axiosInstance.get('/users/');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const getOutgoingFriendReqs = async () => {
+    try {
+        const response = await axiosInstance.get('/users/outgoing-friend-requests');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const sendFriendRequest = async (id) => {
+    try {
+        const response = await axiosInstance.post(`/users/friend-request/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const getFriendRequest = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/users/friend-requests`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const acceptFriendRequest = async (id) => {
+    try {
+        const response = await axiosInstance.put(`/users/friend-request/${id}/accept`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const getStreamToken = async () => {
+    try {
+        const response = await axiosInstance.get("/chat/token");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
