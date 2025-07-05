@@ -30,9 +30,9 @@ const Navbar = () => {
                             </button>
                         </Link>
                         <ThemeSelector />
-                        <div className='avatar w-9 rounded-full overflow-hidden gap-4'>
-                            <Link to={"/profile"}>
-                                <img src={authUser?.profilePic} alt="User Avatar" rel="noreferrer" />
+                        <div className='avatar w-9 h-9 rounded-full overflow-hidden gap-4 hover:shadow-md transition-shadow'>
+                            <Link to={"/profile"} className='w-full h-full'>
+                                <img src={authUser?.profilePic} alt="User Avatar" className='w-full object-cover h-full' rel="noreferrer" />
                             </Link>
                         </div>
                         <button className="btn btn-ghost btn-circle" onClick={logoutMutation}>
