@@ -34,13 +34,17 @@ const Sidebar = () => {
             </nav>
 
             <div className='p-4 flex items-center gap-3'>
-                <div className='avatar rounded-full w-10 overflow-hidden'>
-                    <img src={authUser?.profilePic} alt="User Avatar" />
+                <div className='avatar w-9 h-9 rounded-full overflow-hidden gap-4 hover:shadow-md transition-shadow'>
+                    <Link to={"/profile"} className='w-full h-full'>
+                        <img src={authUser?.profilePic} alt="User Avatar" className='w-full object-cover h-full' rel="noreferrer" />
+                    </Link>
                 </div>
                 <div className='flex-1' >
-                    <p className='font-semibold txet-sm text-base-content'>{authUser?.fullName}</p>
-                    <p className='text-xs text-success flex items-center gap-1'>
-                        <span className='size-2 rounded-full bg-success inline-block' />Online</p>
+                    <Link to={"/profile"}>
+                        <p className='font-semibold txet-sm text-base-content'>{authUser?.fullName}</p>
+                        <p className='text-xs text-success flex items-center gap-1'>
+                            <span className='size-2 rounded-full bg-success inline-block' />Online</p>
+                    </Link>
                 </div >
             </div >
         </aside >
