@@ -10,7 +10,6 @@ import { Toaster } from "react-hot-toast";
 import useAuthUser from "./hooks/useAuthUser";
 import PageLoader from "./components/PageLoader";
 import Layout from "./components/Layout";
-import Profile from "./pages/Profile";
 import { useThemeStore } from "./store/useThemeStore";
 
 export default function App() {
