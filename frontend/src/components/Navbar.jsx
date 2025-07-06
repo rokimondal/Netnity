@@ -10,7 +10,6 @@ const Navbar = () => {
     const { authUser } = useAuthUser();
     const location = useLocation();
     const isChatPath = location.pathname?.startsWith("/chat");
-    const [openDropdown, setOpenDropdown] = useState(false);
     return (
         <nav className='bg-base-200 sticky top-0 z-30 h-16 flex items-center '>
             <div className='container mx-auto'>
@@ -31,22 +30,33 @@ const Navbar = () => {
                             </button>
                         </Link>
                         <ThemeSelector />
-                        <div className='relative'>
-                            <div className="w-9 h-9 rounded-full overflow-hidden cursor-pointer hover:shadow-md" onClick={() => setOpenDropdown(!openDropdown)}>
-                                <img src={authUser?.profilePic} alt="profile" />
+                        <div className="dropdown dropdown-end">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                <div className="w-9 h-9 rounded-full overflow-hidden">
+                                    <img src={authUser?.profilePic} alt="profile" />
+                                </div>
                             </div>
-                            {openDropdown && <div className='absolute mt-2 right-0 bg-base-200 flex-col items-center justify-center w-40 rounded-md shadow-md text-sm'>
-                                <Link to={"/edit-profile"} className='w-full text-left block px-4 py-2 text-sm  hover:opacity-70 hover:bg-base-300 cursor-pointer'>
-                                    Edit profile
-                                </Link>
-                                <Link to={"/forgot-password"} className='w-full text-left block px-4 py-2 text-sm  hover:opacity-70 hover:bg-base-300 cursor-pointer'>
-                                    Forgot Password
-                                </Link>
-                                <button to={"/edit-profile"} className='w-full text-left block px-4 py-2 text-sm text-error  hover:opacity-70 hover:bg-base-300 cursor-pointer' onClick={logoutMutation}>
-                                    Logout
-                                </button>
-                            </div>}
+                            <ul
+                                tabIndex={0}
+                                className=" z-[1] shadow-xl menu menu-sm dropdown-content bg-base-200 rounded-box w-52"
+                            >
+                                <li>
+                                    <Link to="/edit-profile" className="text-sm">Edit Profile</Link>
+                                </li>
+                                <li>
+                                    <Link to="/forgot-password" className="text-sm">Forgot Password</Link>
+                                </li>
+                                <li>
+                                    <button
+                                        onClick={logoutMutation}
+                                        className="text-error text-sm hover:text-error-content"
+                                    >
+                                        Logout
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
