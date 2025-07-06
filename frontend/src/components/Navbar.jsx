@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import useAuthUser from '../hooks/useAuthUser';
 import { Link, useLocation } from 'react-router-dom';
 import { BellIcon, Languages, LogOutIcon } from 'lucide-react';
@@ -10,6 +10,7 @@ const Navbar = () => {
     const { authUser } = useAuthUser();
     const location = useLocation();
     const isChatPath = location.pathname?.startsWith("/chat");
+    const [openDropdown, setOpenDropdown] = useState(false);
     return (
         <nav className='bg-base-200 sticky top-0 z-30 h-16 flex items-center '>
             <div className='container mx-auto'>
@@ -30,14 +31,22 @@ const Navbar = () => {
                             </button>
                         </Link>
                         <ThemeSelector />
-                        <div className='avatar w-9 h-9 rounded-full overflow-hidden gap-4 hover:shadow-md transition-shadow'>
-                            <Link to={"/profile"} className='w-full h-full'>
-                                <img src={authUser?.profilePic} alt="User Avatar" className='w-full object-cover h-full' rel="noreferrer" />
-                            </Link>
+                        <div className='relative'>
+                            <div className="w-9 h-9 rounded-full overflow-hidden cursor-pointer hover:shadow-md" onClick={() => setOpenDropdown(!openDropdown)}>
+                                <img src={authUser?.profilePic} alt="profile" />
+                            </div>
+                            {openDropdown && <div className='absolute mt-2 right-0 bg-base-200 flex-col items-center justify-center w-40 rounded-md shadow-md text-sm'>
+                                <Link to={"/edit-profile"} className='w-full text-left block px-4 py-2 text-sm  hover:opacity-70 hover:bg-base-300 cursor-pointer'>
+                                    Edit profile
+                                </Link>
+                                <Link to={"/forgot-password"} className='w-full text-left block px-4 py-2 text-sm  hover:opacity-70 hover:bg-base-300 cursor-pointer'>
+                                    Forgot Password
+                                </Link>
+                                <button to={"/edit-profile"} className='w-full text-left block px-4 py-2 text-sm text-error  hover:opacity-70 hover:bg-base-300 cursor-pointer' onClick={logoutMutation}>
+                                    Logout
+                                </button>
+                            </div>}
                         </div>
-                        <button className="btn btn-ghost btn-circle" onClick={logoutMutation}>
-                            <LogOutIcon className="h-6 w-6 text-base-content opacity-70" />
-                        </button>
                     </div>
                 </div>
             </div>

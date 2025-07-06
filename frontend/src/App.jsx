@@ -49,7 +49,7 @@ export default function App() {
           element={isAuthenticate && !isOnboarded ? <OnboardingPage /> : <Navigate to={isAuthenticate ? "/" : "/login"} />} />
         <Route
           path="/profile"
-          element={isAuthenticate ? <Profile /> : <Navigate to={"/login"} />} />
+          element={isAuthenticate && isOnboarded ? <Profile /> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
 
       </Routes>
       <Toaster />
