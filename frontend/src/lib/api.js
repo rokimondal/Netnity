@@ -127,3 +127,12 @@ export const getStreamToken = async () => {
         throw error;
     }
 }
+
+export const updateProfile = async (userData) => {
+    try {
+        const response = await axiosInstance.put('/users/update-profile', userData);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
