@@ -12,7 +12,7 @@ cron.schedule('0 * * * *', async () => {
         })
 
         for (const image of unusedImages) {
-            await cloudinary.uploader.distroy(image.publicId);
+            await cloudinary.uploader.destroy(image.publicId);
             await TempImage.findByIdAndDelete(image._id);
         }
     } catch (error) {

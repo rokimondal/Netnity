@@ -1,4 +1,7 @@
+import cloudinary, { extractPublicId } from "../lib/cloudinary.js";
+import { upsertStreamUser } from "../lib/steam.js";
 import FriendRequest from "../models/FriendRequest.js";
+import TempImage from "../models/TempImage.js";
 import User from "../models/User.js";
 
 export async function getRecommendedUsers(req, res) {
@@ -204,4 +207,69 @@ export async function deleteFriendRequests(req, res) {
         res.status(500).json({ message: "Internal server error" });
     }
 
+}
+
+export async function updateProfile(req, res) {
+    try {
+        const userId = req.user._id;
+        const { fullName, bio, nativeLanguage, learningLanguage, location, profilePic } = req.body;
+        if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
+            return res.status(400).json({
+                message: "All fields are required",
+                missingFields: [
+                    !fullName && "fullName",
+                    !bio && "bio",
+                    !nativeLanguage && "nativeLanguage",
+                    !learningLanguage && "learningLanguage",
+                    !location && "location",
+                ].filter(Boolean),
+            });
+        }
+
+        const tempImage = await TempImage.findOne({ userId, url: profilePic });
+
+        const existingUser = await User.findById(userId);
+
+        if (!existingUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (existingUser.profilePic && existingUser.profilePic !== profilePic) {
+            const publicId = extractPublicId(existingUser.profilePic);
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId);
+                console.log("Deleted old profile image from Cloudinary:", publicId);
+            }
+
+        }
+
+        existingUser.fullName = fullName;
+        existingUser.bio = bio;
+        existingUser.nativeLanguage = nativeLanguage;
+        existingUser.learningLanguage = learningLanguage;
+        existingUser.location = location;
+        existingUser.profilePic = profilePic;
+        const updatedUser = await existingUser.save();
+
+        if (tempImage) {
+            await TempImage.findOneAndDelete(tempImage._id);
+        }
+
+        if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+        try {
+            await upsertStreamUser({
+                id: updatedUser._id.toString(),
+                name: updatedUser.fullName,
+                image: updatedUser.profilePic || ""
+            })
+        } catch (error) {
+            console.log("Error updating Stream user during onboarding:", error.message);
+        }
+
+        res.status(200).json({ success: true, user: updatedUser });
+    } catch (error) {
+        console.log("Error in onboarding", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 }

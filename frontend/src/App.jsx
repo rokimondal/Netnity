@@ -11,6 +11,7 @@ import useAuthUser from "./hooks/useAuthUser";
 import PageLoader from "./components/PageLoader";
 import Layout from "./components/Layout";
 import { useThemeStore } from "./store/useThemeStore";
+import ProfileUpdate from "./pages/ProfileUpdate";
 
 export default function App() {
 
@@ -46,7 +47,7 @@ export default function App() {
         <Route
           path="/onboarding"
           element={isAuthenticate && !isOnboarded ? <OnboardingPage /> : <Navigate to={isAuthenticate ? "/" : "/login"} />} />
-
+        <Route path="/edit-profile" element={isAuthenticate && isOnboarded ? <Layout showSidebar={false}><ProfileUpdate /></Layout> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
       </Routes>
       <Toaster />
     </div>

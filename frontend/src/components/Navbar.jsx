@@ -9,7 +9,7 @@ const Navbar = () => {
     const { logoutMutation } = useLogout()
     const { authUser } = useAuthUser();
     const location = useLocation();
-    const isChatPath = location.pathname?.startsWith("/chat");
+    const isChatPath = location.pathname?.startsWith("/chat") || location.pathname == "/edit-profile";
     return (
         <nav className='bg-base-200 sticky top-0 z-30 h-16 flex items-center '>
             <div className='container mx-auto'>
