@@ -4,6 +4,7 @@ import OtpVerification from "../models/OtpVerification.js";
 import User from "../models/User.js";
 import { upsertStreamUser } from "../lib/steam.js";
 import TempImage from "../models/TempImage.js";
+import { createHash } from 'crypto';
 
 export async function signup(req, res) {
     const { fullName, otp, email, password } = req.body;
@@ -13,9 +14,9 @@ export async function signup(req, res) {
             return res.status(400).json({ message: "Invalid email format" })
         }
 
-        const otpRecord = await OtpVerification.findOne({ email });
+        const otpRecord = await OtpVerification.findOne({ email, purpose: "signup" });
 
-        if (!otpRecord || otpRecord.purpose !== "signup" || otpRecord.otp !== otp) {
+        if (!otpRecord || otpRecord.otp !== otp) {
             return res.status(400).json({ message: "Invalid or expired OTP" });
         }
         await OtpVerification.deleteOne({ email });
@@ -82,7 +83,7 @@ export async function sendOtp(req, res) {
             return res.status(400).json({ message: "Invalid email" })
         }
 
-        if (purpose !== "signup" && purpose !== "forgotPassword" && purpose !== "login") {
+        if (purpose !== "signup" && purpose !== "resetPassword" && purpose !== "login") {
             return res.status(400).json({ message: "Invalid purpose" })
         }
 
@@ -95,6 +96,11 @@ export async function sendOtp(req, res) {
             const existUser = await User.findOne({ email });
             if (!existUser) {
                 return res.status(400).json({ message: "There was an error in sending the OTP. Please try again!" });
+            }
+        } else if (purpose === "resetPassword") {
+            const user = await User.findOne({ email });
+            if (!user) {
+                return res.status(400).json({ message: "User not found" });
             }
         }
 
@@ -138,9 +144,9 @@ export async function login(req, res) {
             user = await User.findOne({ email });
             if (!user) return res.status(401).json({ message: "Invalid email and otp" });
 
-            const otpRecord = await OtpVerification.findOne({ email });
+            const otpRecord = await OtpVerification.findOne({ email, purpose: "login" });
 
-            if (!otpRecord || otpRecord.purpose !== "login" || otpRecord.otp !== otp) {
+            if (!otpRecord || otpRecord.otp !== otp) {
                 return res.status(401).json({ message: "Invalid or expired otp" })
             }
             await OtpVerification.deleteOne({ email })
@@ -238,5 +244,69 @@ export async function addAllUsersToStream(req, res) {
     } catch (error) {
         console.error("Error adding users to stream:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+export async function verifyCode(req, res) {
+    const { code } = req.body;
+    const email = req.user.email;
+    const userId = req.user._id;
+    try {
+        if (!code) {
+            return res.status(400).json({ message: "Code is required" });
+        }
+
+        const otpRecord = await OtpVerification.findOne({ email, purpose: "resetPassword" });
+
+        if (!otpRecord || otpRecord.otp !== code) {
+            return res.status(400).json({ message: "Invalid or expired otp" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const resetToken = user.getResetPasswordToken();
+        await user.save();
+
+        await OtpVerification.deleteOne({ email });
+        res.status(200).json({
+            resetToken
+        })
+    } catch (error) {
+        console.log("Error in verify code controller ", error);
+        res.status(501).json({ message: "Internal Server Error" });
+    }
+}
+
+export async function resetPassword(req, res) {
+    const userId = req.user._id;
+    const { resetToken, newPassword } = req.body;
+    try {
+        if (!resetToken || !newPassword) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters" });
+        }
+        const hashToken = createHash("sha256").update(resetToken).digest("hex");
+        const user = await User.findOne({
+            _id: userId,
+            resetPasswordToken: hashToken,
+            resetPasswordExpire: { $gt: Date.now() }
+        }).select("+password +resetPasswordToken +resetPasswordExpire");
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired reset token" });
+        }
+        user.password = newPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+        res.status(200).json({ success: true, message: "Password reset successfully" });
+    } catch (error) {
+        console.log("Error in reset password controller ", error);
+        res.status(501).json({ message: "Internal Server Error" })
     }
 }

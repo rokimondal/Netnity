@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
 import useAuthUser from '../hooks/useAuthUser';
 import { Link, useLocation } from 'react-router-dom';
-import { BellIcon, Languages, LogOutIcon } from 'lucide-react';
+import { BellIcon, Languages } from 'lucide-react';
 import useLogout from '../hooks/useLogout';
 import ThemeSelector from './ThemeSelector';
 
@@ -31,7 +30,7 @@ const Navbar = () => {
                         </Link>
                         <ThemeSelector />
                         <div className="dropdown dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" >
                                 <div className="w-9 h-9 rounded-full overflow-hidden">
                                     <img src={authUser?.profilePic} alt="profile" />
                                 </div>
@@ -41,10 +40,10 @@ const Navbar = () => {
                                 className=" z-[1] shadow-xl menu menu-sm dropdown-content bg-base-200 rounded-box w-52"
                             >
                                 <li>
-                                    <Link to="/edit-profile" className="text-sm">Edit Profile</Link>
+                                    <Link to="/edit-profile" className="text-sm" onClick={() => document.activeElement?.blur()}>Edit Profile</Link>
                                 </li>
                                 <li>
-                                    <Link to="/forgot-password" className="text-sm">Forgot Password</Link>
+                                    <Link to="/forgot-password" className="text-sm" onClick={() => document.activeElement?.blur()}>Forgot Password</Link>
                                 </li>
                                 <li>
                                     <button
