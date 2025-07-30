@@ -23,7 +23,7 @@ const Navbar = () => {
                         }
                     </div>
                     <div className='flex items-center justify-center gap-4 md:gap-3 ml-auto'>
-                        <Link to={"/notification"}>
+                        <Link to={"/notifications"}>
                             <button className="btn btn-ghost btn-circle">
                                 <BellIcon className="h-6 w-6 text-base-content opacity-70" />
                             </button>
