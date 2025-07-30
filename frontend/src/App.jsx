@@ -12,6 +12,7 @@ import PageLoader from "./components/PageLoader";
 import Layout from "./components/Layout";
 import { useThemeStore } from "./store/useThemeStore";
 import ProfileUpdate from "./pages/ProfileUpdate";
+import ForgetPassword from "./pages/ForgetPassword";
 
 export default function App() {
 
@@ -44,6 +45,9 @@ export default function App() {
         <Route
           path="/notifications"
           element={isAuthenticate && isOnboarded ? <Layout showSidebar={true}><NotificationPage /></Layout> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
+        <Route
+          path="/forgot-password"
+          element={isAuthenticate && isOnboarded ? <Layout showSidebar={false}><ForgetPassword /></Layout> : <Navigate to={!isAuthenticate ? "/login" : "/onboarding"} />} />
         <Route
           path="/onboarding"
           element={isAuthenticate && !isOnboarded ? <OnboardingPage /> : <Navigate to={isAuthenticate ? "/" : "/login"} />} />

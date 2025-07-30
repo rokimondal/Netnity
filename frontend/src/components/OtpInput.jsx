@@ -40,7 +40,7 @@ const OtpInput = ({ length, handleChangeOtp}) => {
                 value={data}
                 inputMode="numeric"
                 pattern="[0-9]*"
-                className='input input-bordered w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 text-center text-xl rounded-md focus:outline-none focus:bg-secondary focus:bg-opacity-5'
+                className='input input-bordered w-12 h-12 md:w-16 md:h-16  text-center text-xl rounded-md focus:outline-none focus:bg-secondary focus:bg-opacity-5'
                 onChange={e => handleChange(e.target, index)}
                 onKeyDown={e => {
                     if (e.key === "Backspace") {

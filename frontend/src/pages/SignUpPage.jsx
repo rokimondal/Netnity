@@ -37,7 +37,7 @@ function SignUpPage() {
     });
     const { otpMutation, otpLoading } = useSendOtp({
         onSuccess: () => {
-            setStep(STEP.VERYFY);
+            setStep(STEP.VERIFY);
         },
         onError: (error) => {
             const message = error?.response?.data?.message || "";
@@ -193,7 +193,6 @@ function SignUpPage() {
                         {otpErrorMsg}
                     </div>}
                     <button onClick={handleSignup} type='submit' className='btn btn-primary w-full rounded-md mt-3 max-w-36 lg:max-w-56 lg:text' disabled={isPending}>{isPending ? (<span className="loading loading-dots loading-xl"></span>) : "Sign Up"}</button>
-
                 </div>
                 <p className='text-xs mt-6 lg:mt-7 lg:text-sm '>
                     <span>Want to change your Email Address?</span>{" "}
