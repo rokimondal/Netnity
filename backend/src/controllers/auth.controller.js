@@ -1,10 +1,11 @@
 import { sendVerificationEmail, sendWellcomeEmail } from "../lib/email.js";
 import jwt from "jsonwebtoken"
 import OtpVerification from "../models/OtpVerification.js";
-import User from "../models/User.js";
 import { upsertStreamUser } from "../lib/steam.js";
 import TempImage from "../models/TempImage.js";
 import { createHash } from 'crypto';
+import User from "../models/User.js";
+import { log } from "console";
 
 export async function signup(req, res) {
     const { fullName, otp, email, password } = req.body;
@@ -258,16 +259,19 @@ export async function verifyCode(req, res) {
 
         const otpRecord = await OtpVerification.findOne({ email, purpose: "resetPassword" });
 
+
+
         if (!otpRecord || otpRecord.otp !== code) {
             return res.status(400).json({ message: "Invalid or expired otp" });
         }
+
 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const resetToken = user.getResetPasswordToken();
+        const resetToken = await user.getResetPasswordToken();
         await user.save();
 
         await OtpVerification.deleteOne({ email });
@@ -305,6 +309,7 @@ export async function resetPassword(req, res) {
         user.resetPasswordExpire = undefined;
         await user.save();
         res.status(200).json({ success: true, message: "Password reset successfully" });
+
     } catch (error) {
         console.log("Error in reset password controller ", error);
         res.status(501).json({ message: "Internal Server Error" })
