@@ -149,7 +149,7 @@ function LoginPage() {
                   </div>
                 </div>
                 <button type='submit' className='btn btn-primary w-full rounded-md mt-6' disabled={type == 'otp' && otpLoading}>
-                  {type == 'otp' ? (otpLoading ? (<span className="loading loading-dots loading-xl"></span>) : ("Send code")) : "Sign In"}
+                  {type == 'otp' ? (otpLoading ? (<span className="loading loading-dots loading-xl"></span>) : ("Send code")) : (isPending ? (<span className="loading loading-dots loading-xl"></span>) : "Sign In")}
                 </button>
                 <div className='text-center mt-1 flex flex-row items-center justify-center'>
                   <p className='textarea-sm'>
