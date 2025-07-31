@@ -137,7 +137,7 @@ const ForgetPassword = () => {
             {verifyCodeError && <div className="mt-2 text-sm text-red-500 font-medium">
               {verifyCodeError}
             </div>}
-            <button className='btn btn-primary w-full' onClick={handleVerifyCode} disabled={verifyCodeLoading}>
+            <button className='btn btn-primary w-full' onClick={handleVerifyCode} disabled={code.length != 6 || verifyCodeLoading}>
               {verifyCodeLoading ? (<span className="loading loading-dots loading-xl"></span>) : "Verify Code"}
 
             </button>
