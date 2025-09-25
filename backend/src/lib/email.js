@@ -2,7 +2,7 @@ import nodemailer from "nodemailer"
 import { VerificationEmail, WelcomeEmail } from "../constants/emailTemplate.js";
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+    service: "SendGrid",
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
