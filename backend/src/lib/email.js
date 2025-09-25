@@ -3,8 +3,6 @@ import { VerificationEmail, WelcomeEmail } from "../constants/emailTemplate.js";
 
 const transporter = nodemailer.createTransport({
     service: "SendGrid",
-    port: 587,
-    secure: false, // true for 465, false for other ports
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
