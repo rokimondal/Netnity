@@ -1,37 +1,30 @@
-import nodemailer from "nodemailer"
+import sgMail from '@sendgrid/mail';
 import { VerificationEmail, WelcomeEmail } from "../constants/emailTemplate.js";
 
-const transporter = nodemailer.createTransport({
-    service: "SendGrid",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendVerificationEmail = async (email, code) => {
     try {
-        const response = await transporter.sendMail({
-            from: `"Netnity" ${process.env.EMAIL_USER}`,
+        await sgMail.send({
             to: email,
+            from: 'your-email@example.com', // Verified sender
             subject: "🔐 Verify Your Email",
             html: VerificationEmail(code),
         });
     } catch (error) {
         console.log('Email error : ', error);
     }
-}
+};
 
-export const sendWellcomeEmail = async (email, name) => {
+export const sendWelcomeEmail = async (email, name) => {
     try {
-        const response = await transporter.sendMail({
-            from: `"Netnity" ${process.env.EMAIL_USER}`,
+        await sgMail.send({
             to: email,
+            from: 'your-email@example.com', // Verified sender
             subject: "🎉 Welcome to Netnity!",
             html: WelcomeEmail(name),
         });
-
     } catch (error) {
         console.log('Email error : ', error);
     }
-}
+};
